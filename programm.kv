@@ -1,23 +1,161 @@
-<Anzeige>:
-    Label:
-        text: "Text1"
-    Label:
-        text: "Text2"
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:set pfad2 "/home/golfo"
+#:import pfad os.curdir
+
+####### Standard Einstelllungen
+
+<Button1@Button>:
+    size_hint: 1,0.5
+    font_size: 20
+    color: 0.1,0.2,1,1   # Standard Farbe Schrift aller Knoepfe
+    markup: True
+
+<Button2@Button1>:
+    size_hint: 1,0.3
+
+<Label1@Label>:
+    font_size: 30
+    size_hint_y: 0.2
+
+####### Hauptfenster ###########
+
 <Hauptbildschirm>:
-    Label:
-        text: "Hauptbildschirm"
+    BoxLayout:
+        Label:
+            id: l1
+            text: "Hauptbildschirm"
+        BoxLayout:
+            size_hint_x: 0.2
+            orientation: 'vertical'
+            Button1:
+                text: "\n\n\nEinstellungen"
+                background_normal: './Bilder/s1_einstellung_n.png'
+                background_down: './Bilder/s1_einstellung_d.png'
+                on_release: app.open_settings()
+
+            Button1:
+                text: '\n\n\nWiedergabe'
+                background_normal: './Bilder/s1_wiedergabe_n.png'
+                background_down: './Bilder/s1_wiedergabe_d.png'
+                on_release:
+                    root.manager.transition = NoTransition()
+                    app.root.current="play"
+
+            Button1:
+                text: '\n\n\nAufzeichnen'
+                background_normal: './Bilder/s1_aufzeichnung_n.png'
+                background_down: './Bilder/s1_aufzeichnung_d.png'
+                on_release:
+                    root.manager.transition = NoTransition()
+                    #root.parent.parent.manager.transition = NoTransition()
+                    app.root.current="record"
+
+            Button1:
+                text: '\n\n\nSchliessen'
+                background_normal: './Bilder/s1_schliessen_n.png'
+                background_down: './Bilder/s1_schliessen_d.png'
+                on_release: app.stop()
+
+####### Wiedergabe Fenster ###########
+
 <Wiedergabe>:
-    Label:
-        text: "Hauptbildschirm"
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            font_size: 30
+            id: a1
+            text: 'Es wurde noch keine Datei zur Wiedergabe ausgewählt!'
+        BoxLayout:
+            Button2:
+                text: 'Zurück'
+                on_release:
+                    root.manager.transition = NoTransition()
+                    app.root.current="hbs"
+                background_normal: './Bilder/s2_knopf_n.png'
+                background_down: './Bilder/s2_knopf_d.png'
+            Button2:
+                #text: 'Abspielen'
+                on_release:
+                    root.abspielen()
+                background_normal: './Bilder/s2_play_n.png'
+                background_down: './Bilder/s2_play_d.png'
+
+            Button2:
+                text: '\n\n                    Stop'
+                on_release:
+                    root.stop()
+                background_normal: './Bilder/s2_stop_n.png'
+                background_down: './Bilder/s2_stop_d.png'
+            Button2:
+                text: 'Datei auswählen'
+                on_release: root.show_load()
+                background_normal: './Bilder/s2_knopf_n.png'
+                background_down: './Bilder/s2_knopf_d.png'
+
+####### Beschreibung für das Popup ####
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            path: app.pfad_wiedergabe()
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Abbrechen"
+                on_release: root.cancel()
+
+            Button:
+                text: "Laden"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+
+####### Aufzeichnung Fenster ###########
 <Aufzeichnen>:
-    Label:
-        text: "Hauptbildschirm"
+    BoxLayout:
+        orientation: 'vertical'
+        Label1:
+            id: a1
+            text: 'Aufzeichnung starten?'
+        Label1:
+            id: a2
+            text: ''
+        Label1:
+            id: a3
+            text: ''
+        BoxLayout:
+            size_hint_y: 0.6
+            Button2:
+                text: 'Zurück'
+                on_release:
+#                    root.stop()
+                    root.manager.transition = NoTransition()
+                    app.root.current="hbs"
+                background_normal: './Bilder/s3_knopf_n.png'
+                background_down: './Bilder/s3_knopf_d.png'
+            Button2:
+                text: '\n\n                               Aufzeichnen'
+                on_release:
+                    root.start_messung()
+                background_normal: './Bilder/s3_aufzeichnen_n.png'
+                background_down: './Bilder/s3_aufzeichnen_d.png'
+            Button2:
+                text: '\n\n                        Stop'
+                on_release:
+                    root.stop()
+                background_normal: './Bilder/s3_stop_n.png'
+                background_down: './Bilder/s3_stop_d.png'
 
 #########################################################
 
 Bildschirmverwalter:
     id: bsvw
     Hauptbildschirm:
+        name: 'hbs'
         id: s1
         canvas.before:
             Rectangle:
@@ -26,6 +164,7 @@ Bildschirmverwalter:
                 source: './Bilder/s0_hintergrund.png'
 
     Wiedergabe:
+        name: 'play'
         id: s2
         canvas.before:
             Rectangle:
@@ -33,6 +172,7 @@ Bildschirmverwalter:
                 size: self.size
                 source: './Bilder/s0_hintergrund.png'
     Aufzeichnen:
+        name: 'record'
         id: s3
         canvas.before:
             Rectangle:
