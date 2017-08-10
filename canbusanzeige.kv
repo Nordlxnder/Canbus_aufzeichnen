@@ -1,0 +1,41 @@
+<Anzeige>:
+    Label:
+        text: "Text1"
+    Label:
+        text: "Text2"
+<Hauptbildschirm>:
+    Label:
+        text: "Hauptbildschirm"
+<Wiedergabe>:
+    Label:
+        text: "Hauptbildschirm"
+<Aufzeichnen>:
+    Label:
+        text: "Hauptbildschirm"
+
+#########################################################
+
+Bildschirmverwalter:
+    id: bsvw
+    Hauptbildschirm:
+        id: s1
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: './Bilder/s0_hintergrund.png'
+
+    Wiedergabe:
+        id: s2
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: './Bilder/s0_hintergrund.png'
+    Aufzeichnen:
+        id: s3
+        canvas.before:
+            Rectangle:
+                pos: self.pos
+                size: self.size
+                source: './Bilder/s0_hintergrund.png'
