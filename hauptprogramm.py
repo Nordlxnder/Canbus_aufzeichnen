@@ -159,7 +159,7 @@ class programm(App):
         geschrieben und aktiviert
         '''
         # Messdauer nach Änderung neu setzen
-        global messdauer
+        global messdauer, can0_exist
         messdauer = self.config.get('Aufzeichnung', 'dauer')
 
         if key == "path":
@@ -175,13 +175,16 @@ class programm(App):
                 config.set('CANBUS', 'path', neuer_pfad)
                 config.write()
 
-        #can0_exist = can0_check()
-        #if can0_exist == True:
-        #    baudrate = self.config.get('CANBUS', 'baudrate')
-        #    can_set_baudrate(baudrate)
-        #  # Anzeige aktualisieren im Hauptfenster
-        #    status = can_read_baudrate()
-        #    # root = objekt Bildverwalter oberste Ebene
+
+        if can0_exist == True:
+            baudrate_soll = self.config.get('CANBUS', 'baudrate')
+            canbusstatus.can_set_baudrate(baudrate_soll)
+        # Anzeige aktualisieren im Hauptfenster
+            status = canbusstatus.can_read_baudrate()
+            Bildschirmverwalter=self.root
+            label_hauptbildschirm = Bildschirmverwalter.ids.s1.ids.l1
+            label_hauptbildschirm.text="\nDie CAN Karte ist " + status[1] + "\nBaudrate: " + status[0]
+            # root = objekt Bildverwalter oberste Ebene
         #    root = self.root
         #    # Anzeige1 --> Label1 im Hauptbildschirm
         #    Hauptbildschirm = root.ids.s1.ids.a1.ids.w1

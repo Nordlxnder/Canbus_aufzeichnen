@@ -3,10 +3,10 @@ import subprocess
 
 '''
     Funktionen:
-    
+
     can0_check pfüt ob einen CAN Karte vorhanden ist und gibt die Meldung im Hauptfensteraus
-    
-    
+
+
 
 '''
 
@@ -14,7 +14,8 @@ def can0_check(label_hauptbildschrim):
     ''' prüft ob can0 auf dem PC existiert'''
 
     try:
-        ausgabe = subprocess.check_output('ip -details link show vcan0', shell=True)
+        ausgabe = subprocess.check_output('ip -details link show can0', shell=True)
+        subprocess.call("sudo ip link set can0 type can bitrate 500000", shell=True)
         status = can_read_baudrate()
         #label_hauptbildschrim.text="Eine Cankarte ist vorhanden"
         label_hauptbildschrim.text="\nDie CAN Karte ist " + status[1] + "\nBaudrate: " + status[0]
@@ -50,4 +51,20 @@ def can_read_baudrate():
         status = "Offline"
 
     return baudrate, status
+
+def can_set_baudrate(baudrate):
+    '''
+    Setzt mit Hilfe eines Shellbefehls die Baudrate 1000, 500 oder 250 kHz
+    '''
+
+    subprocess.call("sudo ip link set dev can0 down", shell=True)
+    if baudrate == "1000 kHz":
+        subprocess.call("sudo ip link set can0 type can bitrate 1000000", shell=True)
+    if baudrate == "500 kHz":
+        subprocess.call("sudo ip link set can0 type can bitrate 500000", shell=True)
+    if baudrate == "250 kHz":
+        subprocess.call("sudo ip link set can0 type can bitrate 250000", shell=True)
+    subprocess.call("sudo ip link set dev can0 up", shell=True)
+    pass
+
 
