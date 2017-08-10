@@ -1,7 +1,7 @@
 #!/usr/bin/python python
 # -*- coding: utf-8 -*-
 
-#import subprocess
+import subprocess
 import os  # für den Dateibrowser
 #import time
 #from threading import Timer    # für den timer 2, 5 oder 10s
@@ -30,6 +30,7 @@ class Wiedergabe(Screen):
     ''' Fenster Wiedergabe enthält die Bedienelemente und Funktionen, die für eine Wiedergabe benötigt werden'''
 
     dateiname = ObjectProperty(False)
+
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -82,9 +83,13 @@ class Wiedergabe(Screen):
 
         else:
             #print(self.dateiname)
-            subprocess.call("canplayer -l i -I " + self.dateiname, shell=True)
+            p=subprocess.Popen("exec "+"canplayer -l i -I " + self.dateiname, shell=True)
+            self.pid=p.pid
 
 
+    def stop(self):
+        subprocess.call("kill -9 " + str(self.pid), shell=True)
+        pass
 
     pass
 class Aufzeichnen(Screen): pass
