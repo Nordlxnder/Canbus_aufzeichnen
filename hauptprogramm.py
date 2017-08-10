@@ -29,6 +29,8 @@ class Hauptbildschirm(Screen):  pass
 class Wiedergabe(Screen):
     ''' Fenster Wiedergabe enthält die Bedienelemente und Funktionen, die für eine Wiedergabe benötigt werden'''
 
+    dateiname = ObjectProperty(False)
+
     def dismiss_popup(self):
         self._popup.dismiss()
 
@@ -64,6 +66,23 @@ class Wiedergabe(Screen):
             pass
 
         self.dismiss_popup()
+
+    def abspielen(self):
+        '''
+        Der Knopf Abspielen führt das Shell commando canplayer -l i -I aus, um die Daten
+        auf dem Canbus zu senden.
+        '''
+
+        # wenn noch keine Datei ausgewählt wird eine Meldung ausgeben ansonsten starten
+        if self.dateiname == False:
+            root = self.parent
+            # Label1 im Wiedergabebildschirm
+            wiedergabebildschirm = root.ids.s2.ids.a1
+            wiedergabebildschirm.text = "\n Bitte wählen Sie eine Datei aus!"
+
+        else:
+            #print(self.dateiname)
+            subprocess.call("canplayer -l i -I " + self.dateiname, shell=True)
 
 
 
