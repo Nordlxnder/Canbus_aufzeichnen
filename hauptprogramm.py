@@ -27,16 +27,16 @@ class Aufzeichnen(Screen): pass
 
 # Alle im der KV Datei verwendeten Klassen müssen vor dem Laden definiert sein
 # Die Klassen werden dann beim Laden aufgerufen
-Kivy_Beschreibung_laden = Builder.load_file('canbusanzeige.kv')
+#Kivy_Beschreibung_laden = Builder.load_file('canbusanzeige.kv')
 
 class programm(App):
     # ob can0 existiert True oder False
     # self.can0_exist=can0_exist
     title = 'Canbus Rekorder'
     #    icon = 'canbus2.png'
+    pass
 
-
-    def build(self):
+#    def build(self):
         # Hintergrundfarbe ist Weis
         #Window.clearcolor = (0.1, 0.3, 0.8, 1)
         #Window.clearcolor = (0.38, 0.35, 0.35, 1)
@@ -47,8 +47,8 @@ class programm(App):
         #Window.size = (1920,1080)
         # ganzen Bildschirm
         #Window.fullscreen = True
-        canbusstatus.can0_check()
-        return Kivy_Beschreibung_laden
+#        canbusstatus.can0_check()
+#        return Kivy_Beschreibung_laden
 
 if __name__ == "__main__":
     programm().run()
