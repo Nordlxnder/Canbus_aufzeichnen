@@ -124,17 +124,24 @@ class Aufzeichnen(Screen):
         aufzeichnungsbildschirm = root.ids.s3.ids.a1
         global can0_exist
         if can0_exist == True:
-            global messdauer
+            global messdauer, aufzeichnung
             dateiname = self.dateiname_erstellen()
+            # Aufzeichnung starten
+
+            befehl="exec candump -L can0 >./Logs/"+ str(dateiname)
+            aufzeichnung=subprocess.Popen(befehl , shell=True)
+            self.aufzeichnungsPID=aufzeichnung.pid
+            #print("PID: \t",aufzeichnung.pid)
+
+            # Start des Timers
             fenster_record=self
-            self.timer1=RepeatedTimer(1, int(messdauer), fenster_record, dateiname)
+            self.timer1=RepeatedTimer(1, int(messdauer), fenster_record,dateiname)
+
+
         else:
             aufzeichnungsbildschirm.text = "\n Es existiert KEINE Cankarte!" \
                                            "\n\n Eine Aufzeichnung ist nicht möglich."
             pass
-        dateiname = self.dateiname_erstellen()
-        fenster_record = self
-        self.timer1 = RepeatedTimer(1, int(messdauer), fenster_record, dateiname)
         pass
 
     def stop(self):
@@ -144,8 +151,12 @@ class Aufzeichnen(Screen):
 
         if not self.timer1 == False:
             self.timer1.stop()
+            #print(self.aufzeichnungsPID)
+            subprocess.call("kill -9 " + str(self.aufzeichnungsPID), shell=True)
             pass
         else:
+            global aufzeichnung
+            subprocess.call("kill -9 " + str(aufzeichnung.pid), shell=True)
             pass
     pass
 
@@ -161,10 +172,6 @@ class RepeatedTimer(object):
         self.counter    = messdauer
         self.fenster    =fenster_record
         self.dateiname  =dateiname
-        # Aufzeichnung starten
-        aufzeichnung=subprocess.Popen("exec "+"candump -L can0 >" + str(self.dateiname), shell=True)
-
-        print(aufzeichnung.pid)
         # root ist Bildschirmverwalter
         root = self.fenster.parent
         # Label1 im Bildschim Aufzeichnung
@@ -177,7 +184,11 @@ class RepeatedTimer(object):
         self.counter -=1
         self.aktuelle_messdauer()
         if self.counter== 0:
+            # timer stop
             self.stop()
+            #Aufzeichnung stoppen
+            Aufzeichnen().stop()
+            print ("Fertig!")
 
     def start(self):
 
@@ -185,9 +196,6 @@ class RepeatedTimer(object):
             self._timer = Timer(self.interval, self._run)
             self._timer.start()
             self.is_running = True
-            #aufzeichnung=subprocess.Popen("exec "+"candump -L can0 >" + str(self.dateiname), shell=True)
-            #print(self.dateiname)
-            #self.pid=aufzeichnung.pid
 
 
     def stop(self):
@@ -213,7 +221,6 @@ class RepeatedTimer(object):
         root = self.fenster.parent
         ## Label1 im Aufzeichnungsbildschirm
         aufzeichnungsbildschirm = root.ids.s3.ids.a2
-
         aufzeichnungsbildschirm.text = "\n  verbleibende Messzeit: " \
                                        "" + str(self.counter) + "s"
 
