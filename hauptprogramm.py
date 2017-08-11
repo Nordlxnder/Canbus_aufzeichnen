@@ -3,8 +3,8 @@
 
 import subprocess
 import os  # für den Dateibrowser
-#import time
-#from threading import Timer    # für den timer 2, 5 oder 10s
+import time
+from threading import Timer    # für den timer 2, 5 oder 10s
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
@@ -92,7 +92,130 @@ class Wiedergabe(Screen):
         pass
 
     pass
-class Aufzeichnen(Screen): pass
+class Aufzeichnen(Screen):
+    timer1 = ObjectProperty(False)
+
+    global messung_gestartet
+    messung_gestartet = False
+
+    def dateiname_erstellen(self):
+        #print(time.strftime("%d.%m.%Y %H:%M:%S"))
+        dateiname_zeit=time.strftime("%Y_%d_%m__%H_%M_%S")+ ".log"
+        return dateiname_zeit
+
+    def start_messung(self):
+
+        global messung_gestartet
+        if messung_gestartet == False:
+            self.aufzeichnen()
+            messung_gestartet=True
+
+    def aufzeichnen(self):
+
+        # root ist Bildschirmverwalter
+        root = self.parent
+        # Label2 a2 im Aufzeichnungsbildschirm Anzeige wird gelöscht
+        aufzeichnungsbildschirm = root.ids.s3.ids.a2
+        aufzeichnungsbildschirm.text = ""
+        # Label3 a3 im Aufzeichnungsbildschirm Anzeige wird gelöscht
+        aufzeichnungsbildschirm = root.ids.s3.ids.a3
+        aufzeichnungsbildschirm.text = ""
+        # Label1 im Aufzeichnungsbildschirm
+        aufzeichnungsbildschirm = root.ids.s3.ids.a1
+        global can0_exist
+        if can0_exist == True:
+            global messdauer
+            dateiname = self.dateiname_erstellen()
+            fenster_record=self
+            self.timer1=RepeatedTimer(1, int(messdauer), fenster_record, dateiname)
+        else:
+            aufzeichnungsbildschirm.text = "\n Es existiert KEINE Cankarte!" \
+                                           "\n\n Eine Aufzeichnung ist nicht möglich."
+            pass
+        dateiname = self.dateiname_erstellen()
+        fenster_record = self
+        self.timer1 = RepeatedTimer(1, int(messdauer), fenster_record, dateiname)
+        pass
+
+    def stop(self):
+        # Status der Messung wird gesetzt
+        global messung_gestartet
+        messung_gestartet = False
+
+        if not self.timer1 == False:
+            self.timer1.stop()
+            pass
+        else:
+            pass
+    pass
+
+class RepeatedTimer(object):
+
+    def __init__(self, interval, messdauer, fenster_record, dateiname, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+        self.counter    = messdauer
+        self.fenster    =fenster_record
+        self.dateiname  =dateiname
+        # Aufzeichnung starten
+        aufzeichnung=subprocess.Popen("exec "+"candump -L can0 >" + str(self.dateiname), shell=True)
+
+        print(aufzeichnung.pid)
+        # root ist Bildschirmverwalter
+        root = self.fenster.parent
+        # Label1 im Bildschim Aufzeichnung
+        Aufzeichnungsbildschirm = root.ids.s3.ids.a1
+        Aufzeichnungsbildschirm.text = "\n Die Messung wurde gestartet!"
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.counter -=1
+        self.aktuelle_messdauer()
+        if self.counter== 0:
+            self.stop()
+
+    def start(self):
+
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+            #aufzeichnung=subprocess.Popen("exec "+"candump -L can0 >" + str(self.dateiname), shell=True)
+            #print(self.dateiname)
+            #self.pid=aufzeichnung.pid
+
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
+        # root ist Bildschirmverwalter
+        root = self.fenster.parent
+        # Label1 a1 im Bildschim Aufzeichnung
+        aufzeichnungsbildschirm = root.ids.s3.ids.a1
+        aufzeichnungsbildschirm.text = "\n Die Messung beendet! "
+        # Label3 a3 im Bildschim Aufzeichnung
+        aufzeichnungsbildschirm = root.ids.s3.ids.a3
+        aufzeichnungsbildschirm.text = "\n Messung wurde gespeicht unter:" \
+                                       "\n    "  + str(self.dateiname)
+        # Status der Messung wird gesetzt
+        global messung_gestartet
+        messung_gestartet = False
+
+
+    def aktuelle_messdauer(self):
+        '''aus gabe der aktuellen Messdauer im Fenster Aufzeichnung'''
+        # root ist Bildschirmverwalter
+        root = self.fenster.parent
+        ## Label1 im Aufzeichnungsbildschirm
+        aufzeichnungsbildschirm = root.ids.s3.ids.a2
+
+        aufzeichnungsbildschirm.text = "\n  verbleibende Messzeit: " \
+                                       "" + str(self.counter) + "s"
 
 # Alle im der KV Datei verwendeten Klassen müssen vor dem Laden definiert sein
 # Die Klassen werden dann beim Laden aufgerufen
@@ -134,6 +257,9 @@ class programm(App):
         label_hauptbildschirm = Bildschirmverwalter.ids.s1.ids.l1
         can0_exist=canbusstatus.can0_check(label_hauptbildschirm)
 
+        # Messdauer
+        global messdauer
+        messdauer = self.config.get('Aufzeichnung', 'dauer')
 
         # Hintergrundfarbe ist Weis
         #Window.clearcolor = (0.1, 0.3, 0.8, 1)
