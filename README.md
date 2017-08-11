@@ -1,5 +1,6 @@
 # Canbus_aufzeichnen
-Funktion: 
+Funktion:
+ 
 	Programm um CANBUS Botschaften zu senden oder aufzuzeichnen
 	
 	Aufzeichnungszeit (2s,5s und 10s) auswähltbar
@@ -7,11 +8,13 @@ Funktion:
 	Die aufgezeichneten Daten werden im Ordner Logs als Datum_Zeit.log 
 	gespeichert.	
 
-Anwendung: Raspberry PI 3 oder Banana Pi mit Canbusschnittstelle
-           Die Bedienung ist über ein Touchdisplay (800x 480) möglich
+Anwendung: 
 
+	Raspberry PI 3 oder Banana Pi mit Canbusschnittstelle
+        Die Bedienung ist über ein Touchdisplay (800x 480) möglich
 
-Die Bilder für die Knöpfe sind für eine Auflösung von 800x480 optimiert
+	Die Bilder für die Knöpfe sind für eine Auflösung von 800x480 
+	optimiert
 
 Voraussetzung:
 	
@@ -30,12 +33,14 @@ Voraussetzung:
 
 
 Software:
+
 	Archlinux
 	Python 3
 	Kivy 
 	sudo
 
 Hardware:
+
 	Raspberry Pi3 mit Can-Erweiterung
 	Banana Pi mit Can-Erweiterung
 	Touch Display 800x480 (andere sollten auch möglich sein;)
