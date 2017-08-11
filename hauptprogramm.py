@@ -14,7 +14,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 
-#from kivy.core.window import Window
+from kivy.core.window import Window
 from settingscanbus import settings_can , settings_rekord ,settings_play
 #from kivy.uix.settings import SettingsWithSidebar
 
@@ -273,7 +273,7 @@ class programm(App):
         #Window.clearcolor = (0.38, 0.35, 0.35, 1)
         #Window.clearcolor = [615959]
         # groesse des Fenters festlegen
-        #Window.size = (800, 480)
+        Window.size = (800, 480)
         # Window.size = (2560,1440)
         #Window.size = (1920,1080)
         # ganzen Bildschirm
@@ -341,11 +341,6 @@ class programm(App):
             Bildschirmverwalter=self.root
             label_hauptbildschirm = Bildschirmverwalter.ids.s1.ids.l1
             label_hauptbildschirm.text="\nDie CAN Karte ist " + status[1] + "\nBaudrate: " + status[0]
-            # root = objekt Bildverwalter oberste Ebene
-        #    root = self.root
-        #    # Anzeige1 --> Label1 im Hauptbildschirm
-        #    Hauptbildschirm = root.ids.s1.ids.a1.ids.w1
-        #    Hauptbildschirm.text = "\nDie CAN Karte ist " + status[1] + "\nBaudrate: " + status[0]
 
     def pfad_wiedergabe(self):
         '''
